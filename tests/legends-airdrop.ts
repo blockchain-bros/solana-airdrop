@@ -67,7 +67,6 @@ describe("legends-airdrop", async () => {
     console.log("Amount", userdata.amount);
   });
 
-
   it("Claim again", async () => {
     const pda = await getUserPda();
 
@@ -81,5 +80,4 @@ describe("legends-airdrop", async () => {
       .rpc();
     console.log("Your transaction signature", tx);
   });
-  
 });
