@@ -13,12 +13,11 @@ pub mod legends_airdrop {
         Ok(())
     }
     pub fn claim(ctx: Context<ClaimUserAccount>) -> Result<()> {
+        require!(ctx.accounts.claim_account.claimed == false, ErrorCode::AlreadyClaimed);
+
         if !ctx.accounts.claim_account.claimed{
             print!("claiming");
             ctx.accounts.claim_account.claimed=true;
-        }
-        else {
-            print!("already claimed");
         }
         Ok(())
     }
@@ -73,10 +72,9 @@ pub struct ClaimAccount {
 }
 
 
-/*
-#[error]
+#[error_code]
 pub enum ErrorCode {
     #[msg("You've already claimed this.")]
     AlreadyClaimed,
 }
-*/
+
