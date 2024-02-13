@@ -9,6 +9,11 @@ pub mod legends_airdrop {
         print!("Initializing claim account");
         ctx.accounts.claim_account.amount=amount;
         ctx.accounts.claim_account.claimed=false;
+        ctx.accounts.claim_account.bump=_bump;
+        Ok(())
+    }
+    pub fn claim(ctx: Context<ClaimUserAccount>) -> Result<()> {
+        print!("claiming");
         Ok(())
     }
 }
@@ -36,6 +41,21 @@ pub struct InitializeClaimAccount<'info> {
 
     pub system_program: Program<'info, System>
 }
+
+#[derive(Accounts)]
+pub struct ClaimUserAccount<'info> {
+    #[account(mut)]
+    pub claim_account: Account<'info, ClaimAccount>,
+    
+    /// CHECK: ref user
+    pub user: AccountInfo<'info>,
+
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    pub system_program: Program<'info, System>
+}
+
 
 #[account]
 pub struct ClaimAccount {

@@ -9,11 +9,9 @@ describe("legends-airdrop", async () => {
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.LegendsAirdrop as Program<LegendsAirdrop>;
+  const user = web3.Keypair.generate(); //whitelisted user
 
-  it("Is initialized!", async () => {
-    // Add your test here.
-    const authority = web3.Keypair.generate();
-    const user = web3.Keypair.generate(); //whitelisted user
+  it("Initialize whitelist pubkey with amount", async () => {
     //const amount = 69420 * 1e8; // 69420 LEGEND
     const amount = 69420; // 69420 LEGEND
     const [_claimAccount, bump] = await PublicKey.findProgramAddress(
@@ -22,6 +20,22 @@ describe("legends-airdrop", async () => {
     );
     const tx = await program.methods
       .initializeClaimAccount(amount, bump)
+      .accounts({
+        claimAccount: _claimAccount,
+        user: user.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .rpc();
+    console.log("Your transaction signature", tx);
+  });
+
+  it("Check if user can claim", async () => {
+    const [_claimAccount, bump] = await PublicKey.findProgramAddress(
+      [Buffer.from("claim"), user.publicKey.toBuffer()],
+      program.programId
+    );
+    const tx = await program.methods
+      .claim()
       .accounts({
         claimAccount: _claimAccount,
         user: user.publicKey,
