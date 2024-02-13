@@ -13,7 +13,13 @@ pub mod legends_airdrop {
         Ok(())
     }
     pub fn claim(ctx: Context<ClaimUserAccount>) -> Result<()> {
-        print!("claiming");
+        if !ctx.accounts.claim_account.claimed{
+            print!("claiming");
+            ctx.accounts.claim_account.claimed=true;
+        }
+        else {
+            print!("already claimed");
+        }
         Ok(())
     }
 }
