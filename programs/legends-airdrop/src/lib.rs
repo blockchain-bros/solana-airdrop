@@ -5,9 +5,9 @@ declare_id!("JD1UNr7Nmmg2wGYjJXcACWgPwQHJsqoE2YYWrEbjKmUm");
 pub mod legends_airdrop {
     use super::*;
 
-    pub fn initialize_claim_account(ctx: Context<InitializeClaimAccount>, _bump:u8) -> Result<()> {
+    pub fn initialize_claim_account(ctx: Context<InitializeClaimAccount>, amount:u32, _bump:u8) -> Result<()> {
         print!("Initializing claim account");
-        ctx.accounts.claim_account.amount=100;
+        ctx.accounts.claim_account.amount=amount;
         ctx.accounts.claim_account.claimed=false;
         Ok(())
     }
@@ -43,7 +43,7 @@ pub struct ClaimAccount {
     pub user: Pubkey,       // 32 bytes
     pub bump: u8,           // 4 byte
     pub claimed: bool,      // 4 byte 
-    pub amount: u8          // 1 byte
+    pub amount: u32         // 4 bytes
 }
 
 
