@@ -17,8 +17,8 @@ describe("legends-airdrop", async () => {
   const user = web3.Keypair.generate(); //whitelisted user
   const other_user = web3.Keypair.generate(); //non_whitelisted user
 
-  async function getUserPda(userPublickey: PublicKey): Promise<Pda> {
-    const [publicKey, bump] = await PublicKey.findProgramAddress(
+  function getUserPda(userPublickey: PublicKey): Pda {
+    const [publicKey, bump] = PublicKey.findProgramAddressSync(
       [Buffer.from("claim"), userPublickey.toBuffer()],
       program.programId
     );
@@ -28,17 +28,23 @@ describe("legends-airdrop", async () => {
   it("Initialize whitelisted pubkey with amount", async () => {
     //const amount = 69420 * 1e8; // 69420 LEGEND
     const amount = 69420; // 69420 LEGEND
-    const { publicKey, bump } = await getUserPda(user.publicKey);
-    const tx = await program.methods
-      .initializeClaimAccount(amount, bump)
-      .accounts({
-        claimAccount: publicKey,
-        user: user.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .rpc();
-    // Fix: Add 'dom' library to the 'lib' compiler option
-    console.log("Your transaction signature", tx);
+    const { publicKey, bump } = getUserPda(user.publicKey);
+    try {
+      const tx = await program.methods
+        .initializeClaimAccount(amount, bump)
+        .accounts({
+          claimAccount: publicKey,
+          systemProgram: web3.SystemProgram.programId,
+        })
+        .rpc();
+      //console.log(tx);
+      assert.ok(
+        tx.length >= 88 && tx.length <= 89,
+        "Expect transaction signature"
+      );
+    } catch (error) {
+      assert.fail(`Transaction failed: ${error.message}`);
+    }
   });
 
   it("Check claim status before", async () => {
@@ -69,7 +75,7 @@ describe("legends-airdrop", async () => {
     assert.ok(userdata.amount === 69420, "Expect amount to be 69420");
   });
 
-  it("Claim again", async () => {
+  it("Claim again should fail", async () => {
     const pda = await getUserPda(user.publicKey);
     let tx = {};
 
@@ -91,7 +97,7 @@ describe("legends-airdrop", async () => {
       );
     }
   });
-  it("Check claim status for non-whitelisted user", async () => {
+  it("Check claim status for non-whitelisted user (should fail)", async () => {
     const pda = await getUserPda(other_user.publicKey);
     let response = {};
 

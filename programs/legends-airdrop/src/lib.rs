@@ -1,5 +1,8 @@
 use anchor_lang::prelude::*;
+use solana_program::pubkey;
+
 declare_id!("JD1UNr7Nmmg2wGYjJXcACWgPwQHJsqoE2YYWrEbjKmUm");
+const UPDATE_AUTHORITY: Pubkey  = pubkey!("YoST1LanvgKwpoqEVHGUiH2VhzciRmTTZrukeZkMcMW");
 
 #[program]
 pub mod legends_airdrop {
@@ -30,7 +33,7 @@ pub struct InitializeClaimAccount<'info> {
         init,
         seeds = [
             b"claim".as_ref(),
-            user.key().as_ref()
+            authority.key().as_ref()
         ],
         bump, 
         payer = authority,
@@ -38,9 +41,6 @@ pub struct InitializeClaimAccount<'info> {
     )]
     pub claim_account: Account<'info, ClaimAccount>,
     
-    /// CHECK: ref user
-    pub user: AccountInfo<'info>,
-
     #[account(mut)]
     pub authority: Signer<'info>,
 
@@ -49,12 +49,9 @@ pub struct InitializeClaimAccount<'info> {
 
 #[derive(Accounts)]
 pub struct ClaimUserAccount<'info> {
-    #[account(mut)]
+    #[account(mut, constraint = claim_account.authority == solana_program::pubkey!(UPDATE_AUTHORITY))]
     pub claim_account: Account<'info, ClaimAccount>,
     
-    /// CHECK: ref user
-    pub user: AccountInfo<'info>,
-
     #[account(mut)]
     pub authority: Signer<'info>,
 
