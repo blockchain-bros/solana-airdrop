@@ -61,7 +61,6 @@ describe("legends-airdrop", async () => {
       .claim()
       .accounts({
         claimAccount: pda.publicKey,
-        user: user.publicKey,
         systemProgram: web3.SystemProgram.programId,
       })
       .rpc();
@@ -69,7 +68,7 @@ describe("legends-airdrop", async () => {
   });
 
   it("Check claim status after", async () => {
-    const pda = await getUserPda(user.publicKey);
+    const pda = getUserPda(user.publicKey);
     const userdata = await program.account.claimAccount.fetch(pda.publicKey);
     assert.ok(userdata.claimed === true, "Expect claimed");
     assert.ok(userdata.amount === 69420, "Expect amount to be 69420");
@@ -84,7 +83,6 @@ describe("legends-airdrop", async () => {
         .claim()
         .accounts({
           claimAccount: pda.publicKey,
-          user: user.publicKey,
           systemProgram: web3.SystemProgram.programId,
         })
         .rpc();
@@ -98,7 +96,7 @@ describe("legends-airdrop", async () => {
     }
   });
   it("Check claim status for non-whitelisted user (should fail)", async () => {
-    const pda = await getUserPda(other_user.publicKey);
+    const pda = getUserPda(other_user.publicKey);
     let response = {};
 
     try {
